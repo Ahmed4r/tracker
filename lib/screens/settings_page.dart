@@ -49,31 +49,40 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10.h),
-            TextFormField(
-              controller: nameController,
-              style: GoogleFonts.firaSans(
-                color: Colors.white,
-                fontSize: 15.sp,
-              ),
-              decoration: InputDecoration(
-                hintText: "e.g., John Doe",
-                hintStyle: GoogleFonts.firaSans(
-                  color: Colors.grey,
+            Container(
+              padding: EdgeInsets.all(20).r,
+              height: 50.h,
+              decoration: BoxDecoration(
+                color: Colors.blueGrey,
+                borderRadius: BorderRadius.circular(10.r),
+              )
+              ,
+              child: TextFormField(
+                maxLines: 1,
+                
+                controller: nameController,
+                style: GoogleFonts.firaSans(
+                  color: Colors.white,
                   fontSize: 15.sp,
                 ),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                
+                decoration: InputDecoration(
+                  hintText: "e.g., John Doe",
+                  hintStyle: GoogleFonts.firaSans(
+                    color: Colors.grey,
+                    fontSize: 15.sp,
+                  ),
+                  enabledBorder: InputBorder.none,
+                  border: InputBorder.none,
+                  focusedBorder:InputBorder.none
                 ),
-                focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blueAccent),
-                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your name";
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter your name";
-                }
-                return null;
-              },
             ),
             SizedBox(height: 20.h),
             Center(
