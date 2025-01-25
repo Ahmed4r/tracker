@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tracker/screens/homepage.dart';
-import 'package:tracker/screens/wallet.dart';
+import 'package:tracker/screens/settings_page.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   static const String routeName = '/bottomNavBar';
+
+  const CustomBottomNavBar({super.key});
   @override
   CustomBottomNavBarState createState() => CustomBottomNavBarState();
 }
@@ -17,7 +20,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
   static final List<Widget> pages = <Widget>[
     Homepage(),
     
-    Wallet(),
+    SettingsScreen(),
   ];
 
   // Function to handle tab selection
@@ -60,14 +63,14 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
         items:  <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             backgroundColor: Colors.white,
-            icon: Icon(Icons.home),
+            icon: FaIcon(FontAwesomeIcons.home,size: 20.sp,),
             label: 'Home',
           ),
           
           BottomNavigationBarItem(
             backgroundColor: Colors.white,
-            icon: Icon(Icons.wallet),
-            label: 'Wallet',
+            icon: FaIcon(FontAwesomeIcons.gear,size: 20.sp,),
+            label: 'settings',
           ),
         ],
       ),

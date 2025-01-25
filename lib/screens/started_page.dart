@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tracker/screens/homepage.dart';
+import 'package:tracker/widgets/bottom_nav_bar.dart';
 
 class StartedPage extends StatelessWidget {
   static const String routeName = '/started';
@@ -10,15 +11,27 @@ class StartedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Column(
         children: [
-          Expanded(
-            child: Image.asset('assets/frame.png'),
+          SizedBox(
+            height: 100.h,
           ),
+          Text("Money Tracker",style: GoogleFonts.firaSans(color: Colors.white,fontSize: 30.sp),),
+          SizedBox(
+            height: 20.h,
+          ),
+          Text("Track your expenses and income",style: GoogleFonts.firaSans(color: Colors.white,fontSize: 20.sp),),
+          SizedBox(
+            height: 30.h,
+          ),
+          Expanded(
+            child: Image.asset('assets/frame.png',filterQuality: FilterQuality.high,),
+          ),
+          
           InkWell(
             onTap: (){
-              Navigator.pushNamed(context, Homepage.routeName);
+              Navigator.pushNamed(context, CustomBottomNavBar.routeName);
             },
             child: Container(
               width: 200.w,

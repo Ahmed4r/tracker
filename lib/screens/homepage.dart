@@ -6,11 +6,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracker/widgets/chart.dart';
 
 class Homepage extends StatefulWidget {
   static const String routeName = '/homepage';
-  const Homepage({super.key});
+
+
+   Homepage({super.key});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -24,6 +28,7 @@ class _HomepageState extends State<Homepage> {
   File? _profileImage; // To store the selected image
 
   final ImagePicker _picker = ImagePicker();
+  
 
   @override
   void initState() {
@@ -31,12 +36,24 @@ class _HomepageState extends State<Homepage> {
     // Initialize the boxes
     transactionBox = Hive.box('transactions');
     settingsBox = Hive.box('settings');
+    
 
     // Initialize max amount if not set
     if (settingsBox.get('maxAmount') == null) {
-      settingsBox.put('maxAmount', 50000); // Default max amount
+      settingsBox.put('maxAmount', 1000); // Default max amount
     }
+    _loadProfileImage();
   }
+  Future<void> _loadProfileImage() async {
+  final profileImagePath = settingsBox.get('profile_image_path');
+  if (profileImagePath != null) {
+    setState(() {
+      _profileImage = File(profileImagePath);
+    });
+  }
+}
+
+
 
   @override
   void dispose() {
@@ -46,107 +63,170 @@ class _HomepageState extends State<Homepage> {
   }
 
   // Function to pick an image from the gallery
-  Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path); // Set the selected image
-      });
-    }
-  }
 
-  void _addTransaction(String title, String amount) {
-    if (title.isEmpty || amount.isEmpty) {
-      log("Title or amount cannot be empty");
-      return;
-    }
-
-    if (int.tryParse(amount) == null) {
-      log("Amount must be a valid number");
-      return;
-    }
+ Future<void> _pickImage() async {
+  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  if (pickedFile != null) {
+    final profileImagePath = await _saveImage(pickedFile);
+    await settingsBox.put('profile_image_path', profileImagePath);
 
     setState(() {
-      transactionBox.add({'title': title, 'amount': amount});
+      _profileImage = File(profileImagePath);
+      log("Profile image path: $_profileImage");
     });
   }
+}
 
-  int getTotalAmount() {
-    int total = 0;
+Future<String> _saveImage(XFile pickedFile) async {
+  final directory = await getApplicationDocumentsDirectory();
+  final profileImagePath = '${directory.path}/profile_image.png';
+  log(profileImagePath);
+  await pickedFile.saveTo(profileImagePath);
+  return profileImagePath;
+}
+
+
+
+
+ void _addTransaction(String title, String amount) {
+  if (title.isEmpty || amount.isEmpty) {
+    log("Title or amount cannot be empty");
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Title or amount cannot be empty",
+            style: GoogleFonts.firaSans(
+              color: Colors.white,
+              fontSize: 14.sp,
+            ),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    return;
+  }
+
+  final parsedAmount = double.tryParse(amount);
+  if (parsedAmount == null) {
+    log("Amount must be a valid number");
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Amount must be a valid number",
+            style: GoogleFonts.firaSans(
+              color: Colors.white,
+              fontSize: 14.sp,
+            ),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    return;
+  }
+
+  final double totalAmount = getTotalAmount();
+  final int maxAmount = settingsBox.get('maxAmount', defaultValue: 1000);
+  if (totalAmount + parsedAmount > maxAmount) {
+    log("Transaction exceeds the maximum allowed amount");
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Transaction exceeds the maximum allowed amount",
+            style: GoogleFonts.firaSans(
+              color: Colors.white,
+              fontSize: 14.sp,
+            ),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    return;
+  }
+
+  setState(() {
+    transactionBox.add({'title': title, 'amount': amount});
+  });
+}
+
+  double getTotalAmount() {
+    double total = 0;
     for (var i = 0; i < transactionBox.length; i++) {
       final transaction = transactionBox.getAt(i);
-      total += int.parse(transaction['amount']);
+      total += double.parse(transaction['amount']);
     }
     return total;
   }
 
   // Function to set max amount
-  Future<void> _setMaxAmount(BuildContext context) async {
-    final TextEditingController maxAmountController = TextEditingController();
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            "Set Maximum Amount",
-            style: GoogleFonts.mulish(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
+ Future<void> _setMaxAmount(BuildContext context) async {
+  final TextEditingController maxAmountController = TextEditingController();
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          "Set Maximum Amount",
+          style: GoogleFonts.mulish(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: TextField(
+          controller: maxAmountController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: "Enter Maximum Amount",
+            labelStyle: GoogleFonts.mulish(
+              fontSize: 16.sp,
             ),
           ),
-          content: TextField(
-            controller: maxAmountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Enter Maximum Amount",
-              labelStyle: GoogleFonts.mulish(
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              "Cancel",
+              style: GoogleFonts.mulish(
                 fontSize: 16.sp,
+                color: Colors.red,
               ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
+          TextButton(
+            onPressed: () {
+              final input = maxAmountController.text;
+              if (input.isNotEmpty && int.tryParse(input) != null && int.parse(input) > 0) {
+                setState(() {
+                  settingsBox.put('maxAmount', int.parse(input));
+                });
                 Navigator.pop(context);
-              },
-              child: Text(
-                "Cancel",
-                style: GoogleFonts.mulish(
-                  fontSize: 16.sp,
-                  color: Colors.red,
-                ),
+              } else {
+                log("Invalid input for maximum amount");
+              }
+            },
+            child: Text(
+              "Save",
+              style: GoogleFonts.mulish(
+                fontSize: 16.sp,
+                color: Colors.blue,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                if (maxAmountController.text.isNotEmpty &&
-                    int.tryParse(maxAmountController.text) != null) {
-                  setState(() {
-                    settingsBox.put('maxAmount', int.parse(maxAmountController.text));
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(
-                "Save",
-                style: GoogleFonts.mulish(
-                  fontSize: 16.sp,
-                  color: Colors.blue,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
+
     final int maxAmount = settingsBox.get('maxAmount', defaultValue: 50000);
-    final int totalAmount = getTotalAmount();
-    final int availableBalance = maxAmount - totalAmount;
+    final double totalAmount = getTotalAmount();
+    final double availableBalance = maxAmount - totalAmount;
 
     return Scaffold(
       appBar: AppBar(
@@ -155,36 +235,33 @@ class _HomepageState extends State<Homepage> {
         centerTitle: false,
         actions: [
           GestureDetector(
-            onTap: _pickImage, // Open image picker when tapped
-            child: CircleAvatar(
-              radius: 30.r,
-              backgroundImage: _profileImage != null
-                  ? FileImage(_profileImage!) // Use the selected image
-                  : const NetworkImage(
-                      "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-                    ) as ImageProvider,
-              onBackgroundImageError: (exception, stackTrace) {
-                setState(() {
-                  _profileImage = null; // Fallback to default image
-                });
-              },
-              child: _profileImage == null
-                  ? const Icon(
-                      Icons.person,
-                      color: Colors.white,
-                    )
-                  : null,
-            ),
+            onTap: _pickImage, 
+            child:  CircleAvatar(
+  radius: 30.r,
+  backgroundImage: _profileImage != null
+      ? FileImage(_profileImage!)
+      : const AssetImage("assets/frame.png") as ImageProvider,
+  child: _profileImage == null
+      ? const Icon(
+          Icons.person,
+          color: Colors.white,
+        )
+      : null,
+),
           ),
         ],
-        title: Text(
-          "Hello, Ahmed",
-          style: GoogleFonts.raleway(
-            fontWeight: FontWeight.bold,
-            fontSize: 25.sp,
-            color: Colors.white,
-          ),
-        ),
+        title: ValueListenableBuilder(
+        valueListenable: settingsBox.listenable(),
+        builder: (context, Box box, _) {
+          final String name = box.get('name', defaultValue: 'User');
+          return Text(
+            "Hi, $name",
+            style: GoogleFonts.raleway(
+              fontWeight: FontWeight.bold,
+              fontSize: 25.sp,
+              color: Colors.white,
+            ),
+          );}),
       ),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
@@ -287,6 +364,7 @@ class _HomepageState extends State<Homepage> {
                                 ),
                                 SizedBox(height: 10.h),
                                 TextField(
+                                  keyboardType: TextInputType.number,
                                   style: GoogleFonts.monda(
                                     fontSize: 20.sp,
                                     color: Colors.white,
@@ -315,7 +393,7 @@ class _HomepageState extends State<Homepage> {
                                       return;
                                     }
 
-                                    if (int.tryParse(amount.text) == null) {
+                                    if (double.tryParse(amount.text) == null) {
                                       log("Amount must be a valid number");
                                       return;
                                     }
@@ -351,11 +429,11 @@ class _HomepageState extends State<Homepage> {
                         },
                       );
                     },
+                    backgroundColor: Colors.blueGrey,
                     child: const FaIcon(
                       FontAwesomeIcons.plus,
                       color: Colors.white,
                     ),
-                    backgroundColor: Colors.blueGrey,
                   ),
                 ],
               ),
