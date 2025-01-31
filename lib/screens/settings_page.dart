@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:tracker/theme.dart';
 import 'package:tracker/widgets/bottom_nav_bar.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -13,8 +15,11 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
+       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        
         leading: IconButton(
           onPressed: () {
             Navigator.popAndPushNamed(context,CustomBottomNavBar.routeName); 
@@ -24,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Text(
           "Settings",
           style: GoogleFonts.firaSans(
@@ -32,28 +37,39 @@ class SettingsScreen extends StatelessWidget {
             fontSize: 20.sp,
           ),
         ),
+      actions: [
+        IconButton(
+          icon: const FaIcon(
+            FontAwesomeIcons.sun,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            // Handle dark mode toggle
+             themeProvider.toggleTheme();
+            
+          },
+        ),
+      ],
         centerTitle: true,
       ),
-      backgroundColor: Colors.black,
+     
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+          
             Text(
               "Enter Your Name",
-              style: GoogleFonts.firaSans(
-                color: Colors.white,
-                fontSize: 16.sp,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             SizedBox(height: 10.h),
             Container(
               padding: EdgeInsets.all(20).r,
-              height: 50.h,
+              height: 65.h,
               decoration: BoxDecoration(
-                color: Colors.grey[800],
+                color:Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(10.r),
               )
               ,
@@ -69,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: "e.g., John Doe",
                   hintStyle: GoogleFonts.firaSans(
-                    color: Colors.grey,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                     fontSize: 15.sp,
                   ),
                   enabledBorder: InputBorder.none,
@@ -93,10 +109,7 @@ class SettingsScreen extends StatelessWidget {
         SnackBar(
           content: Text(
             "Please enter your name",
-            style: GoogleFonts.firaSans(
-              color: Colors.white,
-              fontSize: 14.sp,
-            ),
+            style:Theme.of(context).textTheme.bodyMedium
           ),
           backgroundColor: Colors.red,
         ),
@@ -137,13 +150,11 @@ class SettingsScreen extends StatelessWidget {
   },
   child: Text(
     "Save",
-    style: GoogleFonts.firaSans(
-      color: Colors.black,
-      fontSize: 15.sp,
-    ),
+    style:Theme.of(context).textTheme.bodyMedium
   ),
 ),
             ),
+            
           ],
         ),
       ),

@@ -342,7 +342,7 @@ class _HomepageState extends State<Homepage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor:Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         centerTitle: false,
         actions: [
@@ -368,26 +368,22 @@ class _HomepageState extends State<Homepage> {
               final String name = box.get('name', defaultValue: 'User');
               return Text(
                 "Hi, $name",
-                style: GoogleFonts.raleway(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25.sp,
-                  color: Colors.white,
-                ),
+                style: Theme.of(context).appBarTheme.titleTextStyle,
               );
             }),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 30.h),
             Container(
               padding: EdgeInsets.all(20.w),
-              height: 106.h,
+              height: 125.h,
               width: 340.w,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 24, 39, 47),
+                color: Theme.of(context).primaryColor,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -436,7 +432,7 @@ class _HomepageState extends State<Homepage> {
                             height:
                                 MediaQuery.of(context).size.height * (3 / 4),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 0, 0),
+                              color:Theme.of(context).primaryColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(20.r),
                                 topRight: Radius.circular(20.r),
@@ -563,12 +559,9 @@ class _HomepageState extends State<Homepage> {
             SizedBox(height: 10.h),
             Text(
               "Recent Transactions",
-              style: GoogleFonts.mulish(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              style: Theme.of(context).textTheme.bodyMedium,
               ),
-            ),
+            
             SizedBox(height: 10.h),
             ValueListenableBuilder(
               valueListenable: transactionBox.listenable(),
@@ -578,44 +571,52 @@ class _HomepageState extends State<Homepage> {
                   itemCount: box.length,
                   itemBuilder: (context, index) {
                     final transaction = box.getAt(index);
-                    return ListTile(
-                      title: Text(
-                        transaction['title'],
-                        style: GoogleFonts.mulish(
-                          fontSize: 20.sp,
-                          color: Colors.orange,
-                        ),
-                      ),
-                      subtitle: Text(
-                        transaction['amount'],
-                        style: GoogleFonts.mulish(
-                          fontSize: 16.sp,
-                          color: Colors.cyan,
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.blue,
-                            ),
-                            onPressed: () => _editTransaction(
-                                context, index), // Open edit dialog
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        shape: ContinuousRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.r),
+                          side: BorderSide(color: Colors.grey, width: 2.w),),
+                      
+                        tileColor: Theme.of(context).cardColor,
+                        title: Text(
+                          transaction['title'],
+                          style: GoogleFonts.mulish(
+                            fontSize: 20.sp,
+                            color: Colors.orange,
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                box.deleteAt(index);
-                              });
-                            },
+                        ),
+                        subtitle: Text(
+                          transaction['amount'],
+                          style: GoogleFonts.mulish(
+                            fontSize: 16.sp,
+                            color: Colors.cyan,
                           ),
-                        ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.blue,
+                              ),
+                              onPressed: () => _editTransaction(
+                                  context, index), // Open edit dialog
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  box.deleteAt(index);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
