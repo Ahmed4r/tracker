@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tracker/screens/homepage.dart';
 import 'package:tracker/widgets/bottom_nav_bar.dart';
 
 class StartedPage extends StatelessWidget {

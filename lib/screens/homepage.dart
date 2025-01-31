@@ -13,8 +13,7 @@ import 'package:tracker/widgets/chart.dart';
 class Homepage extends StatefulWidget {
   static const String routeName = '/homepage';
 
-
-   Homepage({super.key});
+  const Homepage({super.key});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -28,7 +27,6 @@ class _HomepageState extends State<Homepage> {
   File? _profileImage; // To store the selected image
 
   final ImagePicker _picker = ImagePicker();
-  
 
   @override
   void initState() {
@@ -36,7 +34,6 @@ class _HomepageState extends State<Homepage> {
     // Initialize the boxes
     transactionBox = Hive.box('transactions');
     settingsBox = Hive.box('settings');
-    
 
     // Initialize max amount if not set
     if (settingsBox.get('maxAmount') == null) {
@@ -44,16 +41,15 @@ class _HomepageState extends State<Homepage> {
     }
     _loadProfileImage();
   }
+
   Future<void> _loadProfileImage() async {
-  final profileImagePath = settingsBox.get('profile_image_path');
-  if (profileImagePath != null) {
-    setState(() {
-      _profileImage = File(profileImagePath);
-    });
+    final profileImagePath = settingsBox.get('profile_image_path');
+    if (profileImagePath != null) {
+      setState(() {
+        _profileImage = File(profileImagePath);
+      });
+    }
   }
-}
-
-
 
   @override
   void dispose() {
@@ -64,35 +60,150 @@ class _HomepageState extends State<Homepage> {
 
   // Function to pick an image from the gallery
 
+  Future<void> _pickImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final profileImagePath = await _saveImage(pickedFile);
+      await settingsBox.put('profile_image_path', profileImagePath);
 
- Future<void> _pickImage() async {
-  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    final profileImagePath = await _saveImage(pickedFile);
-    await settingsBox.put('profile_image_path', profileImagePath);
-
-    setState(() {
-      _profileImage = File(profileImagePath);
-      log("Profile image path: $_profileImage");
-    });
+      setState(() {
+        _profileImage = File(profileImagePath);
+        log("Profile image path: $_profileImage");
+      });
+    }
   }
-}
 
-Future<String> _saveImage(XFile pickedFile) async {
-  final directory = await getApplicationDocumentsDirectory();
-  final profileImagePath = '${directory.path}/profile_image.png';
-  log(profileImagePath);
-  await pickedFile.saveTo(profileImagePath);
-  return profileImagePath;
-}
+  Future<void> _editTransaction(BuildContext context, int index) async {
+    final transaction = transactionBox.getAt(index);
+    final TextEditingController editTitleController =
+        TextEditingController(text: transaction['title']);
+    final TextEditingController editAmountController =
+        TextEditingController(text: transaction['amount']);
 
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Edit Transaction",
+            style: GoogleFonts.mulish(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: editTitleController,
+                decoration: InputDecoration(
+                  labelText: "Title",
+                  labelStyle: GoogleFonts.mulish(
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.h),
+              TextField(
+                controller: editAmountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Amount",
+                  labelStyle: GoogleFonts.mulish(
+                    fontSize: 16.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.mulish(
+                  fontSize: 16.sp,
+                  color: Colors.red,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final newTitle = editTitleController.text;
+                final newAmount = editAmountController.text;
 
+                if (newTitle.isEmpty || newAmount.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Title or amount cannot be empty",
+                        style: GoogleFonts.firaSans(
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
 
+                final parsedAmount = double.tryParse(newAmount);
+                if (parsedAmount == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Amount must be a valid number",
+                        style: GoogleFonts.firaSans(
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
 
- void _addTransaction(String title, String amount) {
-  if (title.isEmpty || amount.isEmpty) {
-    log("Title or amount cannot be empty");
-    ScaffoldMessenger.of(context).showSnackBar(
+                // Update the transaction in the Hive box
+                setState(() {
+                  transactionBox.putAt(
+                    index,
+                    {'title': newTitle, 'amount': newAmount},
+                  );
+                });
+
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Save",
+                style: GoogleFonts.mulish(
+                  fontSize: 16.sp,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<String> _saveImage(XFile pickedFile) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final profileImagePath = '${directory.path}/profile_image.png';
+    log(profileImagePath);
+    await pickedFile.saveTo(profileImagePath);
+    return profileImagePath;
+  }
+
+  void _addTransaction(String title, String amount) {
+    if (title.isEmpty || amount.isEmpty) {
+      log("Title or amount cannot be empty");
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             "Title or amount cannot be empty",
@@ -104,13 +215,13 @@ Future<String> _saveImage(XFile pickedFile) async {
           backgroundColor: Colors.red,
         ),
       );
-    return;
-  }
+      return;
+    }
 
-  final parsedAmount = double.tryParse(amount);
-  if (parsedAmount == null) {
-    log("Amount must be a valid number");
-    ScaffoldMessenger.of(context).showSnackBar(
+    final parsedAmount = double.tryParse(amount);
+    if (parsedAmount == null) {
+      log("Amount must be a valid number");
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             "Amount must be a valid number",
@@ -122,14 +233,14 @@ Future<String> _saveImage(XFile pickedFile) async {
           backgroundColor: Colors.red,
         ),
       );
-    return;
-  }
+      return;
+    }
 
-  final double totalAmount = getTotalAmount();
-  final int maxAmount = settingsBox.get('maxAmount', defaultValue: 1000);
-  if (totalAmount + parsedAmount > maxAmount) {
-    log("Transaction exceeds the maximum allowed amount");
-    ScaffoldMessenger.of(context).showSnackBar(
+    final double totalAmount = getTotalAmount();
+    final int maxAmount = settingsBox.get('maxAmount', defaultValue: 1000);
+    if (totalAmount + parsedAmount > maxAmount) {
+      log("Transaction exceeds the maximum allowed amount");
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             "Transaction exceeds the maximum allowed amount",
@@ -141,13 +252,13 @@ Future<String> _saveImage(XFile pickedFile) async {
           backgroundColor: Colors.red,
         ),
       );
-    return;
-  }
+      return;
+    }
 
-  setState(() {
-    transactionBox.add({'title': title, 'amount': amount});
-  });
-}
+    setState(() {
+      transactionBox.add({'title': title, 'amount': amount});
+    });
+  }
 
   double getTotalAmount() {
     double total = 0;
@@ -159,71 +270,72 @@ Future<String> _saveImage(XFile pickedFile) async {
   }
 
   // Function to set max amount
- Future<void> _setMaxAmount(BuildContext context) async {
-  final TextEditingController maxAmountController = TextEditingController();
-  await showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text(
-          "Set Maximum Amount",
-          style: GoogleFonts.mulish(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: TextField(
-          controller: maxAmountController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: "Enter Maximum Amount",
-            labelStyle: GoogleFonts.mulish(
-              fontSize: 16.sp,
+  Future<void> _setMaxAmount(BuildContext context) async {
+    final TextEditingController maxAmountController = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Set Maximum Amount",
+            style: GoogleFonts.mulish(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(
-              "Cancel",
-              style: GoogleFonts.mulish(
+          content: TextField(
+            controller: maxAmountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: "Enter Maximum Amount",
+              labelStyle: GoogleFonts.mulish(
                 fontSize: 16.sp,
-                color: Colors.red,
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {
-              final input = maxAmountController.text;
-              if (input.isNotEmpty && int.tryParse(input) != null && int.parse(input) > 0) {
-                setState(() {
-                  settingsBox.put('maxAmount', int.parse(input));
-                });
+          actions: [
+            TextButton(
+              onPressed: () {
                 Navigator.pop(context);
-              } else {
-                log("Invalid input for maximum amount");
-              }
-            },
-            child: Text(
-              "Save",
-              style: GoogleFonts.mulish(
-                fontSize: 16.sp,
-                color: Colors.blue,
+              },
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.mulish(
+                  fontSize: 16.sp,
+                  color: Colors.red,
+                ),
               ),
             ),
-          ),
-        ],
-      );
-    },
-  );
-}
+            TextButton(
+              onPressed: () {
+                final input = maxAmountController.text;
+                if (input.isNotEmpty &&
+                    int.tryParse(input) != null &&
+                    int.parse(input) > 0) {
+                  setState(() {
+                    settingsBox.put('maxAmount', int.parse(input));
+                  });
+                  Navigator.pop(context);
+                } else {
+                  log("Invalid input for maximum amount");
+                }
+              },
+              child: Text(
+                "Save",
+                style: GoogleFonts.mulish(
+                  fontSize: 16.sp,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
     final int maxAmount = settingsBox.get('maxAmount', defaultValue: 50000);
     final double totalAmount = getTotalAmount();
     final double availableBalance = maxAmount - totalAmount;
@@ -235,33 +347,34 @@ Future<String> _saveImage(XFile pickedFile) async {
         centerTitle: false,
         actions: [
           GestureDetector(
-            onTap: _pickImage, 
-            child:  CircleAvatar(
-  radius: 30.r,
-  backgroundImage: _profileImage != null
-      ? FileImage(_profileImage!)
-      : const AssetImage("assets/frame.png") as ImageProvider,
-  child: _profileImage == null
-      ? const Icon(
-          Icons.person,
-          color: Colors.white,
-        )
-      : null,
-),
+            onTap: _pickImage,
+            child: CircleAvatar(
+              radius: 30.r,
+              backgroundImage: _profileImage != null
+                  ? FileImage(_profileImage!)
+                  : const AssetImage("assets/frame.png") as ImageProvider,
+              child: _profileImage == null
+                  ? const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    )
+                  : null,
+            ),
           ),
         ],
         title: ValueListenableBuilder(
-        valueListenable: settingsBox.listenable(),
-        builder: (context, Box box, _) {
-          final String name = box.get('name', defaultValue: 'User');
-          return Text(
-            "Hi, $name",
-            style: GoogleFonts.raleway(
-              fontWeight: FontWeight.bold,
-              fontSize: 25.sp,
-              color: Colors.white,
-            ),
-          );}),
+            valueListenable: settingsBox.listenable(),
+            builder: (context, Box box, _) {
+              final String name = box.get('name', defaultValue: 'User');
+              return Text(
+                "Hi, $name",
+                style: GoogleFonts.raleway(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25.sp,
+                  color: Colors.white,
+                ),
+              );
+            }),
       ),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
@@ -306,7 +419,8 @@ Future<String> _saveImage(XFile pickedFile) async {
                               color: Colors.white,
                               size: 20,
                             ),
-                            onPressed: () => _setMaxAmount(context), // Open the dialog
+                            onPressed: () =>
+                                _setMaxAmount(context), // Open the dialog
                           ),
                         ],
                       ),
@@ -319,14 +433,16 @@ Future<String> _saveImage(XFile pickedFile) async {
                         context: context,
                         builder: (context) {
                           return Container(
-                            height: MediaQuery.of(context).size.height * (3 / 4),
+                            height:
+                                MediaQuery.of(context).size.height * (3 / 4),
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 0, 0, 0),
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(20.r),
                                 topRight: Radius.circular(20.r),
                               ),
-                              border: Border.all(color: Colors.grey, width: 0.2.w),
+                              border:
+                                  Border.all(color: Colors.grey, width: 0.2.w),
                             ),
                             width: double.infinity,
                             child: Column(
@@ -358,7 +474,8 @@ Future<String> _saveImage(XFile pickedFile) async {
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      borderSide: const BorderSide(color: Colors.white),
+                                      borderSide:
+                                          const BorderSide(color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -381,14 +498,16 @@ Future<String> _saveImage(XFile pickedFile) async {
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      borderSide: const BorderSide(color: Colors.white),
+                                      borderSide:
+                                          const BorderSide(color: Colors.white),
                                     ),
                                   ),
                                 ),
                                 SizedBox(height: 10.h),
                                 InkWell(
                                   onTap: () {
-                                    if (amount.text.isEmpty || title.text.isEmpty) {
+                                    if (amount.text.isEmpty ||
+                                        title.text.isEmpty) {
                                       log("Title or amount cannot be empty");
                                       return;
                                     }
@@ -438,8 +557,9 @@ Future<String> _saveImage(XFile pickedFile) async {
                 ],
               ),
             ),
-            const LineChartSample2(),
-            const Divider(color: Colors.white),
+            // const LineChartSample2(),
+            SizedBox(height: 10.h,),
+            const Divider(color: Colors.blueGrey, thickness: 2),
             SizedBox(height: 10.h),
             Text(
               "Recent Transactions",
@@ -473,16 +593,29 @@ Future<String> _saveImage(XFile pickedFile) async {
                           color: Colors.cyan,
                         ),
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            box.deleteAt(index);
-                          });
-                        },
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.blue,
+                            ),
+                            onPressed: () => _editTransaction(
+                                context, index), // Open edit dialog
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                box.deleteAt(index);
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     );
                   },

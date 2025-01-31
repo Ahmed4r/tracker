@@ -17,7 +17,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.popAndPushNamed(context,CustomBottomNavBar.routeName); // Go back to the previous screen
+            Navigator.popAndPushNamed(context,CustomBottomNavBar.routeName); 
           },
           icon: const FaIcon(
             FontAwesomeIcons.arrowLeft,
@@ -53,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
               padding: EdgeInsets.all(20).r,
               height: 50.h,
               decoration: BoxDecoration(
-                color: Colors.blueGrey,
+                color: Colors.grey[800],
                 borderRadius: BorderRadius.circular(10.r),
               )
               ,

@@ -8,7 +8,7 @@ import 'package:tracker/widgets/bottom_nav_bar.dart';
 
 void main ()async{
    WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter(); // Initialize Hive
+  await Hive.initFlutter();
   await Hive.openBox('transactions'); 
   await Hive.openBox('settings');
   await Hive.openBox('myBox');
@@ -29,7 +29,7 @@ class Moneytracker extends StatelessWidget {
       child: MaterialApp(
         theme: ThemeData(
           highlightColor: Colors.transparent,
-    splashFactory: NoSplash.splashFactory, // Disables splash effect globally
+    splashFactory: NoSplash.splashFactory,
   ),
         debugShowCheckedModeBanner: false,
         initialRoute: StartedPage.routeName,
