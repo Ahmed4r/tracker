@@ -37,10 +37,8 @@ class Moneytracker extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       child: MaterialApp(
-        darkTheme: ThemeData.dark(
-          useMaterial3: true
-        ),
-        // themeMode: ThemeMode.system,
+        
+       themeMode: ThemeMode.system,
        theme: themeProvider.themeData,
         debugShowCheckedModeBanner: false,
         initialRoute: StartedPage.routeName,
