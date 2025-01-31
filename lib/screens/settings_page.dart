@@ -39,8 +39,8 @@ class SettingsScreen extends StatelessWidget {
         ),
       actions: [
         IconButton(
-          icon: const FaIcon(
-            FontAwesomeIcons.sun,
+          icon:  FaIcon(
+           themeProvider.isDarkMode ? FontAwesomeIcons.sun : FontAwesomeIcons.moon,
             color: Colors.white,
           ),
           onPressed: () {
