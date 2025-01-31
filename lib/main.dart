@@ -40,7 +40,7 @@ class Moneytracker extends StatelessWidget {
         darkTheme: ThemeData.dark(
           useMaterial3: true
         ),
-        themeMode: ThemeMode.light,
+        // themeMode: ThemeMode.system,
        theme: themeProvider.themeData,
         debugShowCheckedModeBanner: false,
         initialRoute: StartedPage.routeName,

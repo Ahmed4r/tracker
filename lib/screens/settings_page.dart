@@ -15,14 +15,13 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     final themeProvider = Provider.of<ThemeProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        
         leading: IconButton(
           onPressed: () {
-            Navigator.popAndPushNamed(context,CustomBottomNavBar.routeName); 
+            Navigator.popAndPushNamed(context, CustomBottomNavBar.routeName);
           },
           icon: const FaIcon(
             FontAwesomeIcons.arrowLeft,
@@ -37,29 +36,29 @@ class SettingsScreen extends StatelessWidget {
             fontSize: 20.sp,
           ),
         ),
-      actions: [
-        IconButton(
-          icon:  FaIcon(
-           themeProvider.isDarkMode ? FontAwesomeIcons.sun : FontAwesomeIcons.moon,
-            color: Colors.white,
+        actions: [
+          IconButton(
+            icon: FaIcon(
+              themeProvider.isDarkMode
+                  ? FontAwesomeIcons.sun
+                  : FontAwesomeIcons.moon,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // Handle dark mode toggle
+              themeProvider.toggleTheme();
+            },
           ),
-          onPressed: () {
-            // Handle dark mode toggle
-             themeProvider.toggleTheme();
-            
-          },
-        ),
-      ],
+        ],
         centerTitle: true,
       ),
-     
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          
+             
             Text(
               "Enter Your Name",
               style: Theme.of(context).textTheme.bodyMedium,
@@ -69,29 +68,25 @@ class SettingsScreen extends StatelessWidget {
               padding: EdgeInsets.all(20).r,
               height: 65.h,
               decoration: BoxDecoration(
-                color:Theme.of(context).primaryColor,
+                color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(10.r),
-              )
-              ,
+              ),
               child: TextFormField(
                 maxLines: 1,
-                
                 controller: nameController,
                 style: GoogleFonts.firaSans(
                   color: Colors.white,
                   fontSize: 15.sp,
                 ),
-                
                 decoration: InputDecoration(
-                  hintText: "e.g., John Doe",
-                  hintStyle: GoogleFonts.firaSans(
-                    color: Theme.of(context).textTheme.bodyMedium!.color,
-                    fontSize: 15.sp,
-                  ),
-                  enabledBorder: InputBorder.none,
-                  border: InputBorder.none,
-                  focusedBorder:InputBorder.none
-                ),
+                    hintText: "e.g.,  ahmed ",
+                    hintStyle: GoogleFonts.firaSans(
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                      fontSize: 15.sp,
+                    ),
+                    enabledBorder: InputBorder.none,
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter your name";
@@ -103,58 +98,57 @@ class SettingsScreen extends StatelessWidget {
             SizedBox(height: 20.h),
             Center(
               child: ElevatedButton(
-  onPressed: () async {
-    if (nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Please enter your name",
-            style:Theme.of(context).textTheme.bodyMedium
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+                onPressed: () async {
+                  if (nameController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Please enter your name",
+                            style: Theme.of(context).textTheme.bodyMedium),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
 
-    try {
-      final settingsBox = Hive.box('settings');
-      await settingsBox.put('name', nameController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Name saved successfully!",
-            style: GoogleFonts.firaSans(
-              color: Colors.white,
-              fontSize: 14.sp,
+                  try {
+                    final settingsBox = Hive.box('settings');
+                    await settingsBox.put('name', nameController.text);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Name saved successfully!",
+                          style: GoogleFonts.firaSans(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    // Go back to the previous screen
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Failed to save name: $e",
+                          style: GoogleFonts.firaSans(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child:
+                    Text("Save", style: Theme.of(context).textTheme.bodyMedium),
+              ),
             ),
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
-       // Go back to the previous screen
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Failed to save name: $e",
-            style: GoogleFonts.firaSans(
-              color: Colors.white,
-              fontSize: 14.sp,
+            SizedBox(
+              height: 50.h,
             ),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  },
-  child: Text(
-    "Save",
-    style:Theme.of(context).textTheme.bodyMedium
-  ),
-),
-            ),
-            
+            Text("Devloped by Ahmed Hegazy",style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
       ),
