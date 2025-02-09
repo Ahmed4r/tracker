@@ -21,7 +21,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
   // List of widgets to display for each tab
   static final List<Widget> pages = <Widget>[
     Homepage(),
-    CreditCardScreen(),
+    // CreditCardScreen(),
     
     SettingsScreen(),
   ];
@@ -70,11 +70,11 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
             label: 'Home',
           ),
           
-          BottomNavigationBarItem(
-            backgroundColor: Colors.white,
-            icon: FaIcon(FontAwesomeIcons.creditCard,size: 20.sp,),
-            label: 'Credit',
-          ),
+          // BottomNavigationBarItem(
+          //   backgroundColor: Colors.white,
+          //   icon: FaIcon(FontAwesomeIcons.creditCard,size: 20.sp,),
+          //   label: 'Credit',
+          // ),
           BottomNavigationBarItem(
             backgroundColor: Colors.white,
             icon: FaIcon(FontAwesomeIcons.gear,size: 20.sp,),
