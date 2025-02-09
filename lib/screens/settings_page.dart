@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tracker/theme.dart';
 import 'package:tracker/widgets/bottom_nav_bar.dart';
+import 'package:u_credit_card/u_credit_card.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = '/settings';

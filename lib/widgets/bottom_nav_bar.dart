@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tracker/screens/credit_card_screen.dart';
 import 'package:tracker/screens/homepage.dart';
 import 'package:tracker/screens/settings_page.dart';
+import 'package:tracker/widgets/credit_card_info.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
   static const String routeName = '/bottomNavBar';

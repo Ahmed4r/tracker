@@ -9,6 +9,7 @@ import 'package:tracker/screens/started_page.dart';
 import 'package:tracker/screens/settings_page.dart';
 import 'package:tracker/theme.dart';
 import 'package:tracker/widgets/bottom_nav_bar.dart';
+import 'package:tracker/widgets/credit_card_info.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
