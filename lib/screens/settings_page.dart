@@ -151,7 +151,7 @@ class SettingsScreen extends StatelessWidget {
               height: 50.h,
             ),
             
-            Text("Devloped by Ahmed Hegazy",style: Theme.of(context).textTheme.bodyMedium),
+            Text("Developed by Ahmed Hegazy",style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
       ),
