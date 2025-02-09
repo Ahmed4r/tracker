@@ -43,28 +43,32 @@ class ThemeProvider with ChangeNotifier {
   static final ThemeData _lightTheme = ThemeData(
     cardColor: const Color.fromARGB(255, 35, 13, 63),
     brightness: Brightness.light,
-    primaryColor: const Color.fromARGB(255, 69, 67, 67),
+    primaryColor:const Color.fromARGB(255, 35, 13, 63),
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
+      toolbarHeight: 90.h,
+      
       titleTextStyle: GoogleFonts.firaSans(
         color: Colors.white,
-        fontSize: 20,
+        fontSize: 25,
+        fontWeight: FontWeight.bold,
+
       ),
-      backgroundColor: const Color.fromARGB(255, 69, 67, 67),
+      backgroundColor: const Color.fromARGB(255, 35, 13, 63),
       foregroundColor: Colors.white,
     ),
     textTheme: TextTheme(
       headlineLarge: GoogleFonts.firaSans(
         color: Colors.black,
-        fontSize: 30,
+        fontSize: 30.sp,
       ),
       bodyMedium: GoogleFonts.firaSans(
         color: Colors.black,
-        fontSize: 16,
+        fontSize: 16.sp,
       ),
       bodySmall: GoogleFonts.firaSans(
         color: Colors.black,
-        fontSize: 16,
+        fontSize: 16.sp,
       ),
     ),
   );
@@ -76,9 +80,10 @@ class ThemeProvider with ChangeNotifier {
     primaryColor: Colors.grey[800],
     scaffoldBackgroundColor: Colors.black,
     appBarTheme: AppBarTheme(
+      toolbarHeight: 90.h,
       titleTextStyle: GoogleFonts.firaSans(
         color: Colors.white,
-        fontSize: 30,
+        fontSize: 30.sp,
         fontWeight: FontWeight.bold
       ),
       backgroundColor: Colors.black,

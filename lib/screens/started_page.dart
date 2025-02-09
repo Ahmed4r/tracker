@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tracker/widgets/bottom_nav_bar.dart';
+import 'package:tracker/screens/homepage.dart';
 
 class StartedPage extends StatelessWidget {
   static const String routeName = '/started';
@@ -30,7 +30,7 @@ class StartedPage extends StatelessWidget {
           
           InkWell(
             onTap: (){
-              Navigator.pushNamed(context, CustomBottomNavBar.routeName);
+              Navigator.pushNamed(context, Homepage.routeName);
             },
             child: Container(
               width: 200.w,

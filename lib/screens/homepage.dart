@@ -7,8 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tracker/widgets/chart.dart';
 
 class Homepage extends StatefulWidget {
   static const String routeName = '/homepage';
@@ -391,6 +389,7 @@ class _HomepageState extends State<Homepage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                     
                       Text(
                         "Available Balance",
                         style: GoogleFonts.mulish(
@@ -623,6 +622,7 @@ class _HomepageState extends State<Homepage> {
                 );
               },
             ),
+             
           ],
         ),
       ),

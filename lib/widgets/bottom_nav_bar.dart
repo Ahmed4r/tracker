@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tracker/screens/credit_card_screen.dart';
 import 'package:tracker/screens/homepage.dart';
 import 'package:tracker/screens/settings_page.dart';
 
@@ -19,6 +20,7 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
   // List of widgets to display for each tab
   static final List<Widget> pages = <Widget>[
     Homepage(),
+    CreditCardScreen(),
     
     SettingsScreen(),
   ];
@@ -67,6 +69,11 @@ class CustomBottomNavBarState extends State<CustomBottomNavBar> {
             label: 'Home',
           ),
           
+          BottomNavigationBarItem(
+            backgroundColor: Colors.white,
+            icon: FaIcon(FontAwesomeIcons.creditCard,size: 20.sp,),
+            label: 'Credit',
+          ),
           BottomNavigationBarItem(
             backgroundColor: Colors.white,
             icon: FaIcon(FontAwesomeIcons.gear,size: 20.sp,),

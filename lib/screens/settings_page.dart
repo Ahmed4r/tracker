@@ -58,6 +58,7 @@ class SettingsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+           
              
             Text(
               "Enter Your Name",
@@ -81,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
                 decoration: InputDecoration(
                     hintText: "e.g.,  ahmed ",
                     hintStyle: GoogleFonts.firaSans(
-                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                      color: Colors.white,
                       fontSize: 15.sp,
                     ),
                     enabledBorder: InputBorder.none,
@@ -148,6 +149,7 @@ class SettingsScreen extends StatelessWidget {
             SizedBox(
               height: 50.h,
             ),
+            
             Text("Devloped by Ahmed Hegazy",style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),

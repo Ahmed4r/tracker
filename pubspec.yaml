@@ -34,11 +34,13 @@ dependencies:
   flutter_screenutil: ^5.9.3
   fl_chart: ^0.70.2
   font_awesome_flutter: ^10.8.0
+
   hive_flutter: ^1.1.0
   image_picker: ^1.1.2
   path_provider: ^2.0.15
   shared_preferences: ^2.4.0
   provider: ^6.0.0
+  u_credit_card: ^1.4.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
